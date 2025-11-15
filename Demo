@@ -1,0 +1,361 @@
+import React, { useState } from 'react';
+import { Upload, AlertTriangle, CheckCircle, AlertCircle, FileText, TrendingDown } from 'lucide-react';
+
+const MenuAnalyzer = () => {
+  // Sample data to demonstrate the dashboard
+  const [showDemo] = useState(true);
+
+  const sampleMenuData = [
+    {
+      id: 1,
+      itemName: 'Chicken Nuggets',
+      ingredients: 'Chicken, wheat flour, water, modified corn starch, yellow corn flour, salt, leavening (sodium acid pyrophosphate, sodium bicarbonate), spices, yeast extract, natural flavor, dextrose, extractives of paprika',
+      upfCount: 5,
+      upfIngredients: ['modified corn starch', 'natural flavor', 'dextrose', 'yeast extract', 'sodium acid pyrophosphate'],
+      replacement: 'Grilled chicken breast strips',
+      risk: 'harmful'
+    },
+    {
+      id: 2,
+      itemName: 'Fresh Apple Slices',
+      ingredients: 'Apples, ascorbic acid (vitamin C)',
+      upfCount: 0,
+      upfIngredients: [],
+      replacement: 'Item is already healthy',
+      risk: 'safe'
+    },
+    {
+      id: 3,
+      itemName: 'Pepperoni Pizza',
+      ingredients: 'Enriched wheat flour, water, tomato paste, mozzarella cheese (milk, cheese cultures, salt, enzymes), pepperoni (pork, beef, salt, contains 2% or less of: water, dextrose, spices, lactic acid starter culture, oleoresin of paprika, sodium ascorbate, natural flavor, sodium nitrite, BHA, BHT), yeast, soybean oil, salt, sugar, modified food starch, corn syrup solids, maltodextrin',
+      upfCount: 8,
+      upfIngredients: ['enriched wheat flour', 'dextrose', 'natural flavor', 'sodium nitrite', 'BHA', 'BHT', 'modified food starch', 'maltodextrin'],
+      replacement: 'Whole wheat pizza with fresh mozzarella',
+      risk: 'harmful'
+    },
+    {
+      id: 4,
+      itemName: 'Chocolate Milk',
+      ingredients: 'Lowfat milk, liquid sugar (sugar, water), cocoa (processed with alkali), cornstarch, salt, carrageenan, natural flavor, vitamin A palmitate, vitamin D3',
+      upfCount: 3,
+      upfIngredients: ['cornstarch', 'carrageenan', 'natural flavor'],
+      replacement: 'Plain milk with cocoa powder and honey',
+      risk: 'potentially_harmful'
+    },
+    {
+      id: 5,
+      itemName: 'Whole Grain Roll',
+      ingredients: 'Whole wheat flour, water, yeast, honey, salt, wheat gluten, soybean oil',
+      upfCount: 0,
+      upfIngredients: [],
+      replacement: 'Item is already healthy',
+      risk: 'safe'
+    },
+    {
+      id: 6,
+      itemName: 'Fish Sticks',
+      ingredients: 'Alaska pollock, enriched bleached wheat flour, vegetable oil, modified corn starch, yellow corn flour, salt, whey, sugar, yeast, sodium aluminum phosphate, natural flavor, paprika, color added',
+      upfCount: 6,
+      upfIngredients: ['enriched bleached wheat flour', 'modified corn starch', 'sodium aluminum phosphate', 'natural flavor', 'color added', 'whey'],
+      replacement: 'Baked cod or tilapia filets',
+      risk: 'harmful'
+    },
+    {
+      id: 7,
+      itemName: 'Garden Salad',
+      ingredients: 'Romaine lettuce, cherry tomatoes, cucumber, carrots, red cabbage',
+      upfCount: 0,
+      upfIngredients: [],
+      replacement: 'Item is already healthy',
+      risk: 'safe'
+    },
+    {
+      id: 8,
+      itemName: 'Fruit Snacks',
+      ingredients: 'Corn syrup, sugar, modified corn starch, fruit juice concentrate, citric acid, natural and artificial flavor, sodium citrate, mineral oil, carnauba wax, color (red 40, yellow 5, blue 1)',
+      upfCount: 7,
+      upfIngredients: ['corn syrup', 'modified corn starch', 'natural and artificial flavor', 'mineral oil', 'red 40', 'yellow 5', 'blue 1'],
+      replacement: 'Fresh fruit cups or dried fruit',
+      risk: 'harmful'
+    },
+    {
+      id: 9,
+      itemName: 'Wheat Bread',
+      ingredients: 'Whole wheat flour, water, wheat gluten, yeast, honey, contains 2% or less of each: soybean oil, salt, dough conditioners',
+      upfCount: 1,
+      upfIngredients: ['dough conditioners'],
+      replacement: 'Artisan whole grain bread',
+      risk: 'potentially_harmful'
+    },
+    {
+      id: 10,
+      itemName: 'Mac and Cheese',
+      ingredients: 'Cooked enriched macaroni, water, cheddar cheese, whey, milkfat, milk protein concentrate, salt, sodium tripolyphosphate, citric acid, lactic acid, sodium phosphate, calcium phosphate, yellow 5, yellow 6, enzymes',
+      upfCount: 6,
+      upfIngredients: ['enriched macaroni', 'whey', 'sodium tripolyphosphate', 'sodium phosphate', 'yellow 5', 'yellow 6'],
+      replacement: 'Whole grain pasta with real cheese sauce',
+      risk: 'harmful'
+    },
+    {
+      id: 11,
+      itemName: 'Steamed Broccoli',
+      ingredients: 'Broccoli',
+      upfCount: 0,
+      upfIngredients: [],
+      replacement: 'Item is already healthy',
+      risk: 'safe'
+    },
+    {
+      id: 12,
+      itemName: 'Chicken Patty Sandwich',
+      ingredients: 'Chicken breast with rib meat, water, seasoning (salt, sugar, modified food starch, maltodextrin, spices, paprika, garlic powder, onion powder, autolyzed yeast extract, natural flavor), sodium phosphates. Battered and breaded with: wheat flour, salt, leavening, spices, corn starch, soybean oil, yellow 5',
+      upfCount: 7,
+      upfIngredients: ['modified food starch', 'maltodextrin', 'autolyzed yeast extract', 'natural flavor', 'sodium phosphates', 'corn starch', 'yellow 5'],
+      replacement: 'Grilled chicken breast',
+      risk: 'harmful'
+    }
+  ];
+
+  const analysis = {
+    totalItems: 12,
+    harmful: 6,
+    potentiallyHarmful: 2,
+    safe: 4,
+    totalUpfIngredients: 43
+  };
+
+  const getRiskColor = (risk) => {
+    switch(risk) {
+      case 'harmful': return 'bg-red-100 text-red-800 border-red-300';
+      case 'potentially_harmful': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'safe': return 'bg-green-100 text-green-800 border-green-300';
+      default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  const getRiskLabel = (risk) => {
+    switch(risk) {
+      case 'harmful': return 'HARMFUL';
+      case 'potentially_harmful': return 'POTENTIALLY HARMFUL';
+      case 'safe': return 'SAFE';
+      default: return 'UNKNOWN';
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">School Menu Analyzer</h1>
+          <p className="text-gray-600">Ultra-Processed Food Detection Dashboard</p>
+          <p className="text-sm text-gray-500 mt-2">Sample menu analysis - Upload your own spreadsheet to analyze</p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Dashboard Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-blue-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-semibold uppercase">Total Items</p>
+                  <p className="text-4xl font-bold text-gray-800 mt-2">{analysis.totalItems}</p>
+                </div>
+                <FileText className="h-12 w-12 text-blue-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-green-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-semibold uppercase">Safe Items</p>
+                  <p className="text-4xl font-bold text-green-600 mt-2">{analysis.safe}</p>
+                  <p className="text-xs text-gray-500 mt-1">{Math.round((analysis.safe/analysis.totalItems)*100)}% of menu</p>
+                </div>
+                <CheckCircle className="h-12 w-12 text-green-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-yellow-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-semibold uppercase">Potentially Harmful</p>
+                  <p className="text-4xl font-bold text-yellow-600 mt-2">{analysis.potentiallyHarmful}</p>
+                  <p className="text-xs text-gray-500 mt-1">{Math.round((analysis.potentiallyHarmful/analysis.totalItems)*100)}% of menu</p>
+                </div>
+                <AlertCircle className="h-12 w-12 text-yellow-500" />
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-red-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-500 text-sm font-semibold uppercase">Harmful Items</p>
+                  <p className="text-4xl font-bold text-red-600 mt-2">{analysis.harmful}</p>
+                  <p className="text-xs text-gray-500 mt-1">{Math.round((analysis.harmful/analysis.totalItems)*100)}% of menu</p>
+                </div>
+                <AlertTriangle className="h-12 w-12 text-red-500" />
+              </div>
+            </div>
+          </div>
+
+          {/* Category Breakdown */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Safe Items */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4 border-b pb-3">
+                <CheckCircle className="h-8 w-8 text-green-500" />
+                <div>
+                  <h3 className="text-xl font-bold text-green-700">Safe Items</h3>
+                  <p className="text-sm text-gray-500">No UPF ingredients detected</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {sampleMenuData.filter(item => item.risk === 'safe').map(item => (
+                  <div key={item.id} className="p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p className="font-semibold text-green-900 text-sm">{item.itemName}</p>
+                    <p className="text-xs text-green-700 mt-1">✓ Approved</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Potentially Harmful Items */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4 border-b pb-3">
+                <AlertCircle className="h-8 w-8 text-yellow-500" />
+                <div>
+                  <h3 className="text-xl font-bold text-yellow-700">Potentially Harmful</h3>
+                  <p className="text-sm text-gray-500">1-2 UPF ingredients</p>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {sampleMenuData.filter(item => item.risk === 'potentially_harmful').map(item => (
+                  <div key={item.id} className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p className="font-semibold text-yellow-900 text-sm">{item.itemName}</p>
+                    <p className="text-xs text-yellow-700 mt-1">⚠ {item.upfCount} UPF ingredient(s)</p>
+                    <p className="text-xs text-blue-600 mt-2 font-medium">→ {item.replacement}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Harmful Items */}
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="flex items-center gap-3 mb-4 border-b pb-3">
+                <AlertTriangle className="h-8 w-8 text-red-500" />
+                <div>
+                  <h3 className="text-xl font-bold text-red-700">Harmful Items</h3>
+                  <p className="text-sm text-gray-500">3+ UPF ingredients</p>
+                </div>
+              </div>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {sampleMenuData.filter(item => item.risk === 'harmful').map(item => (
+                  <div key={item.id} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                    <p className="font-semibold text-red-900 text-sm">{item.itemName}</p>
+                    <p className="text-xs text-red-700 mt-1">⚠ {item.upfCount} UPF ingredients</p>
+                    <p className="text-xs text-blue-600 mt-2 font-medium">→ {item.replacement}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Analysis Table */}
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="p-6 border-b border-gray-200 bg-gray-50">
+              <h2 className="text-2xl font-semibold text-gray-800">Detailed Menu Analysis</h2>
+              <p className="text-sm text-gray-600 mt-1">Complete breakdown of all menu items with ingredient analysis</p>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <div className="max-h-96 overflow-y-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-100 sticky top-0">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Menu Item
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Category
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Harmful Ingredients Found
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Recommended Replacement
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sampleMenuData.map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50 transition">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-semibold text-gray-900">{item.itemName}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full border-2 ${getRiskColor(item.risk)}`}>
+                            {getRiskLabel(item.risk)}
+                          </span>
+                          {item.upfCount > 0 && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              {item.upfCount} UPF ingredient{item.upfCount !== 1 ? 's' : ''}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-600 max-w-md">
+                            {item.upfIngredients.length > 0 ? (
+                              <div className="space-y-1">
+                                {item.upfIngredients.slice(0, 4).map((ing, idx) => (
+                                  <div key={idx} className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded font-medium border border-red-200">
+                                    • {ing}
+                                  </div>
+                                ))}
+                                {item.upfIngredients.length > 4 && (
+                                  <div className="text-xs text-gray-500 font-medium">
+                                    +{item.upfIngredients.length - 4} more harmful ingredients
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-green-700 font-semibold text-sm flex items-center gap-1">
+                                <CheckCircle className="h-4 w-4" />
+                                No harmful ingredients
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-blue-700 font-semibold">{item.replacement}</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Upload New File Button */}
+          <div className="text-center bg-white rounded-lg shadow-lg p-8">
+            <Upload className="mx-auto h-12 w-12 text-blue-500 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Ready to analyze your menu?</h3>
+            <p className="text-gray-600 mb-4">Upload a CSV or Excel file with columns: Item Name, Ingredients</p>
+            <label className="inline-block">
+              <input
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                className="hidden"
+              />
+              <span className="bg-blue-600 text-white px-8 py-3 rounded-lg cursor-pointer hover:bg-blue-700 transition inline-block font-semibold">
+                Upload Your Menu Spreadsheet
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MenuAnalyzer;
